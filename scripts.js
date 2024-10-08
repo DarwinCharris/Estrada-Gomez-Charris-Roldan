@@ -599,6 +599,13 @@ function TableThompson(data) {
     return;
   }
 
+  // Obtener la lista de estados
+  const states = Object.keys(transitionTable["&"]);
+
+  // Asumimos que el primer estado es el inicial y el último es el final
+  const initialState = states[0]; // Primer estado
+  const finalState = states[states.length - 1]; // Último estado
+
   // Generar HTML de la tabla
   let transitionTableHTML = `
         <h3>Transition Table</h3>
@@ -612,11 +619,14 @@ function TableThompson(data) {
                 </tr>
             </thead>
             <tbody>
-                ${Object.keys(transitionTable["&"])
+                ${states
                   .map(
-                    (state) => `
+                    (state) => ` 
                     <tr>
-                        <td>${state}</td>
+                        <td>${
+                          state === initialState ? "→" + state : 
+                          state === finalState ? "*" + state : state
+                        }</td>
                         ${Object.keys(transitionTable)
                           .map(
                             (input) => `
@@ -638,6 +648,8 @@ function TableThompson(data) {
 
   tablesDiv.innerHTML = transitionTableHTML;
 }
+
+
 function TableAFDNop(data) {
   const afdNop = data.AFDnop; // Datos del AFD no óptimo
   const T = data.T; // Transiciones de estados
@@ -829,6 +841,9 @@ function graficarAFDOpt(data) {
     nodes.add(nodeOptions);
   });
 
+  // Diccionario para almacenar los bucles de un mismo nodo
+  const loops = {};
+
   // Agregar las transiciones (aristas) basadas en los símbolos del alfabeto con IDs únicos
   Object.keys(afdOpt)
     .filter((key) => key !== "states" && key !== "values")
@@ -836,19 +851,43 @@ function graficarAFDOpt(data) {
       Object.keys(afdOpt[symbol]).forEach((fromState) => {
         const toState = afdOpt[symbol][fromState];
         if (toState) {
-          const edgeId = `${fromState}-${toState}-${symbol}`; // ID único para las aristas
-          edges.add({
-            id: edgeId, // ID único
-            from: fromState,
-            to: Object.keys(afdOpt.states).find(
-              (key) => afdOpt.states[key] === toState
-            ),
-            label: symbol,
-            arrows: { to: { enabled: true } },
-          });
+          const edgeId = `${fromState}-${toState}`; // ID sin símbolo porque agruparemos los símbolos si es necesario
+          const isLoop = fromState === toState; // Verificar si es un bucle
+
+          // Si es un bucle, agrupar los símbolos
+          if (isLoop) {
+            if (!loops[fromState]) {
+              loops[fromState] = new Set(); // Usar Set para evitar duplicados
+            }
+            loops[fromState].add(symbol); // Agregar el símbolo al conjunto del bucle
+          } else {
+            // Si no es un bucle, agregar la arista normalmente
+            edges.add({
+              id: edgeId + `-${symbol}`, // ID único para las aristas no bucles
+              from: fromState,
+              to: Object.keys(afdOpt.states).find(
+                (key) => afdOpt.states[key] === toState
+              ),
+              label: symbol,
+              arrows: { to: { enabled: true } },
+            });
+          }
         }
       });
     });
+
+  // Agregar las aristas para los bucles agrupados
+  Object.keys(loops).forEach((state) => {
+    const symbols = Array.from(loops[state]).join(","); // Unir los símbolos con coma
+    edges.add({
+      id: `${state}-${state}-loop`, // ID único para el bucle
+      from: state,
+      to: state,
+      label: symbols, // Mostrar los símbolos agrupados
+      arrows: { to: { enabled: true } },
+      smooth: { enabled: true, type: "curvedCW", roundness: 0.5 }, // Curvatura para el bucle
+    });
+  });
 
   // Si existe un nodo inicial, agregar un nodo invisible apuntando a él
   if (initialNode !== null) {
@@ -864,7 +903,7 @@ function graficarAFDOpt(data) {
       from: "invisible",
       to: initialNode,
       label: "start",
-      color: { color: "#5DADE2" },
+      color: { color: "blue" },
       arrows: { to: { enabled: true } },
     });
   }
@@ -874,14 +913,15 @@ function graficarAFDOpt(data) {
   const networkData = { nodes: nodes, edges: edges };
 
   const options = {
-    nodes: {
-      shape: "circle",
-      size: 20,
-      color: { background: "#89CFF0", border: "#5DADE2" },
-      font: { size: 30 },
-    },
+    nodes: { shape: "circle", size: 20, font: { size: 30 } },
     edges: { arrows: { to: { enabled: true } }, length: 200 },
-    physics: { enabled: true },
+    physics: {
+      barnesHut: {
+        gravitationalConstant: -3900,
+        centralGravity: 0,
+      },
+      minVelocity: 1
+    }
   };
 
   console.log("Nodos en AFD Óptimo:", nodes.get());
@@ -889,6 +929,7 @@ function graficarAFDOpt(data) {
 
   afdOptGraph = new vis.Network(container, networkData, options);
 }
+
 
 function graficarAFDNop(data) {
   const nodes = new vis.DataSet();

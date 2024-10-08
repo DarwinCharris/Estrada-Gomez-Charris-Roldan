@@ -39,6 +39,17 @@ h3 {
   color: white;
   transition: background-color 0.3s ease;
 }
+.small-placeholder-text {
+  font-size: 10px; /* Tamaño de texto más pequeño */
+  color: #666;     /* Color del texto */
+  background-color: #f0f0f0; /* Color de fondo suave */
+  border: 1px solid #ccc; /* Borde gris claro */
+  padding: 5px; /* Espaciado interno para que el texto no esté pegado al borde */
+  margin-top: 5px; /* Espacio superior */
+  text-align: center; /* Centrar texto */
+  border-radius: 5px; /* Bordes redondeados para suavizar el cuadro */
+  display: inline-block; /* Mantener el cuadro ajustado al contenido */
+}
 
 #submitBtn:hover {
   background-color: #245d75;
