@@ -15,6 +15,7 @@ document.getElementById("submitBtn").addEventListener("click", function () {
 
   // Ahora usamos 'data' como si viniera de la API
   if (Object.keys(data).length > 0 && data.constructor === Object) {
+    console.log(data.alphabet)
     // Graficar y mostrar datos solo después de que los datos se hayan cargado
     graficarThompson(data); // Graficar Thompson
     graficarAFDNop(data); // Graficar AFD no óptimo
@@ -24,7 +25,7 @@ document.getElementById("submitBtn").addEventListener("click", function () {
     TableAFDOpt(data); // Mostrar tabla del AFD óptimo
 
     mostrarIdenticos(data); // Mostrar los estados idénticos
-    mostrarSimbolos(regexInput); // Mostrar símbolos
+    mostrarSimbolos(data); // Mostrar símbolos
 
     // Volver a mostrar los gráficos y tablas una vez que se han cargado
     document
@@ -443,28 +444,20 @@ document.getElementById("resetButton").addEventListener("click", function () {
   resetForm();
 });
 
-function mostrarSimbolos(regex) {
+function mostrarSimbolos(data) {
   // Crear un Set para almacenar los símbolos únicos
-  let simbolosSet = new Set();
-
-  // Recorrer la expresión regular y agregar solo los símbolos válidos (ej. letras a-z)
-  for (let char of regex) {
-    if (/[a-zA-Z]/.test(char)) {
-      // Filtrar solo letras (puedes ajustar esto si tu alfabeto incluye otros símbolos)
-      simbolosSet.add(char);
-    }
-  }
+  let simbolosSet = new Set(data.alphabet); // Agregar directamente los símbolos de data.alphabet
 
   // Convertir el Set a un array y luego a un string en formato {a, b, ...}
   let simbolosArray = Array.from(simbolosSet).sort(); // Ordenar alfabéticamente
-  let simbolosString = `Σ = {${simbolosArray.join(", ")}}`;
+  let simbolosString = `Σ = {${simbolosArray.join(", ")}}`; // Corregido formato de string
 
   // Seleccionar todos los elementos con la clase 'simbolos' e insertar el HTML en cada uno
   document.querySelectorAll(".simbolos").forEach(function (simbolosDiv) {
     simbolosDiv.innerHTML = `
             <h3>Symbols</h3>
             <p>${simbolosString}</p>
-        `;
+      `;
   });
 }
 
