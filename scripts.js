@@ -823,10 +823,7 @@ function graficarAFDOpt(data) {
   Object.keys(afdOpt.states).forEach((key) => {
     let nodeOptions = {
       id: key,
-      label:
-        ` ${afdOpt.states[key]}` +
-        (afdOpt.values[key].includes("->") ? "" : "") +
-        (afdOpt.values[key].includes("*") ? "" : ""),
+      label: ` ${afdOpt.states[key]}`,
       shape: afdOpt.values[key].includes("*") ? "box" : "circle",
       borderWidth: afdOpt.values[key].includes("*") ? 4 : 1, // Borde más ancho para el nodo final
     };
@@ -844,6 +841,9 @@ function graficarAFDOpt(data) {
   // Diccionario para almacenar los bucles de un mismo nodo
   const loops = {};
 
+  // Diccionario para almacenar las aristas agrupadas
+  const edgesMap = {};
+
   // Agregar las transiciones (aristas) basadas en los símbolos del alfabeto con IDs únicos
   Object.keys(afdOpt)
     .filter((key) => key !== "states" && key !== "values")
@@ -852,29 +852,29 @@ function graficarAFDOpt(data) {
         const toState = afdOpt[symbol][fromState];
         if (toState) {
           const edgeId = `${fromState}-${toState}`; // ID sin símbolo porque agruparemos los símbolos si es necesario
-          const isLoop = fromState === toState; // Verificar si es un bucle
 
-          // Si es un bucle, agrupar los símbolos
-          if (isLoop) {
-            if (!loops[fromState]) {
-              loops[fromState] = new Set(); // Usar Set para evitar duplicados
-            }
-            loops[fromState].add(symbol); // Agregar el símbolo al conjunto del bucle
+          // Verificar si la arista ya existe
+          if (edgesMap[edgeId]) {
+            // Si ya existe, agregar el símbolo al conjunto de etiquetas
+            edgesMap[edgeId].label += `, ${symbol}`;
           } else {
-            // Si no es un bucle, agregar la arista normalmente
-            edges.add({
-              id: edgeId + `-${symbol}`, // ID único para las aristas no bucles
+            // Si no existe, crear la nueva arista
+            edgesMap[edgeId] = {
+              id: edgeId, // ID único para las aristas no bucles
               from: fromState,
               to: Object.keys(afdOpt.states).find(
                 (key) => afdOpt.states[key] === toState
               ),
-              label: symbol,
+              label: symbol, // Comenzar con el primer símbolo
               arrows: { to: { enabled: true } },
-            });
+            };
           }
         }
       });
     });
+
+  // Agregar las aristas agrupadas al grafo
+  Object.values(edgesMap).forEach((edge) => edges.add(edge));
 
   // Agregar las aristas para los bucles agrupados
   Object.keys(loops).forEach((state) => {
@@ -886,6 +886,7 @@ function graficarAFDOpt(data) {
       label: symbols, // Mostrar los símbolos agrupados
       arrows: { to: { enabled: true } },
       smooth: { enabled: true, type: "curvedCW", roundness: 0.5 }, // Curvatura para el bucle
+      font: { align: "horizontal", size: 20 }, // Alinear la etiqueta horizontalmente
     });
   });
 
