@@ -1,6 +1,6 @@
-import { generateAutomatonJSON, test } from './backend.js';
+import { generateAutomatonJSON, test } from "./backend.js";
 // Almacenar el valor de regexInput cuando se hace clic en el botón Send
-let data ={};
+let data = {};
 let regexInput = "";
 let afdNopGraph, afdOptGraph; // Variables globales para los grafos
 
@@ -10,7 +10,7 @@ document.getElementById("submitBtn").addEventListener("click", function () {
   resetForm();
 
   // Llama a la función generateAtomatonJson del backend.js para obtener el JSON
-   data = generateAutomatonJSON(regexInput); // Asegúrate de que esta función retorne el JSON correcto
+  data = generateAutomatonJSON(regexInput); // Asegúrate de que esta función retorne el JSON correcto
 
   // Ahora usamos 'data' como si viniera de la API
   if (Object.keys(data).length > 0 && data.constructor === Object) {
@@ -32,18 +32,16 @@ document.getElementById("submitBtn").addEventListener("click", function () {
         element.classList.remove("hidden");
       });
 
-    document
-      .querySelectorAll(".container-cadena")
-      .forEach(function (element) {
-        element.classList.remove("hidden");
-      });
+    document.querySelectorAll(".container-cadena").forEach(function (element) {
+      element.classList.remove("hidden");
+    });
   } else {
     // Manejo de errores si 'data' es null o indefinido
     Swal.fire({
       icon: "error",
-      title: "Error al generar el autómata",
-      text: "No se pudo generar el autómata a partir de la expresión regular.",
-      confirmButtonText: "Entendido",
+      title: "Error generating the automaton",
+      text: "The automaton could not be generated from the regular expression.",
+      confirmButtonText: "Understood",
       confirmButtonColor: "gray",
       customClass: {
         popup: "smaller-swal-popup",
@@ -53,30 +51,27 @@ document.getElementById("submitBtn").addEventListener("click", function () {
   }
 });
 
-
-
 // Llamada a las APIs para el AFD No Óptimo y AFD Óptimo
 document.getElementById("submitButton").addEventListener("click", function () {
   const inputCadena = document.getElementById("cadena").value;
 
-  const dataNop = test(data.AFDnop, inputCadena)
-  if (dataNop.sussefull && 
-    dataNop.transitions.length === 1 && 
-    dataNop.transitions[0].node1 === "A" && 
-    dataNop.transitions[0].node2 === "" && 
-    dataNop.transitions[0].chart === "") {
-      console.log('Si sirve')
-    }
+  const dataNop = test(data.AFDnop, inputCadena);
+  if (
+    dataNop.sussefull &&
+    dataNop.transitions.length === 1 &&
+    dataNop.transitions[0].node1 === "A" &&
+    dataNop.transitions[0].node2 === "" &&
+    dataNop.transitions[0].chart === ""
+  ) {
+  }
   // Procesar los datos del AFD No Óptimo
   currentTransitionsNop = dataNop.transitions;
   construirMapeo(afdNopGraph, nodeIdMapNop);
   mostrarRecorrido(dataNop, "AFD No Óptimo");
-  const dataOpt=test(data.AFDop, inputCadena)
+  const dataOpt = test(data.AFDop, inputCadena);
   currentTransitionsOpt = dataOpt.transitions;
   construirMapeo(afdOptGraph, nodeIdMapOpt);
   mostrarRecorrido(dataOpt, "AFD Óptimo");
-
-
 });
 
 // Crear un objeto de mapeo dinámico para cada grafo
@@ -129,7 +124,9 @@ function highlightEdge(graph, map, fromId, toId, duration) {
   const mappedFromId = map[fromId.trim()];
   const mappedToId = map[toId.trim()];
   const edges = graph.body.data.edges.get();
-  const edge = edges.find((e) => e.from === mappedFromId && e.to === mappedToId);
+  const edge = edges.find(
+    (e) => e.from === mappedFromId && e.to === mappedToId
+  );
 
   if (edge) {
     const originalColor = edge.color || { color: "#5DADE2" }; // Color de la arista
@@ -190,8 +187,6 @@ function automaticTraversalOpt() {
   }
 }
 
-
-
 // Función para iniciar el recorrido automático en AFD No Óptimo
 function startTraversalNop() {
   clearInterval(traversalIntervalNop);
@@ -206,16 +201,17 @@ function startTraversalOpt() {
   traversalIntervalOpt = setInterval(automaticTraversalOpt, 3000);
 }
 
-
 // Asociar el botón "Start Traversal" al AFD No Óptimo
 document
   .getElementById("startButtonNop")
   .addEventListener("click", function () {
-    const inputCadena = document.getElementById("cadena").value;
-    const regex = new RegExp(regexInput);
-
-    // Verificar si la cadena vacía es aceptada por la expresión regular
-    if (inputCadena === "" && regex.test("")) {
+    if (
+      dataNop.sussefull &&
+      dataNop.transitions.length === 1 &&
+      dataNop.transitions[0].node1 === "A" &&
+      dataNop.transitions[0].node2 === "" &&
+      dataNop.transitions[0].chart === ""
+    ) {
       resaltarPrimerNodo(afdNopGraph, nodeIdMapNop);
       return;
     } else {
@@ -227,43 +223,22 @@ document
 document
   .getElementById("startButtonOpt")
   .addEventListener("click", function () {
-    const inputCadena = document.getElementById("cadena").value; // Obtener el valor de la cadena
-    const regex = new RegExp(regexInput); // Crear la expresión regular a partir de la entrada
 
-    // Verificar si la cadena vacía es aceptada por la expresión regular
-    if (inputCadena === "" && regex.test("")) {
-      resaltarPrimerNodo(afdOptGraph, nodeIdMapOpt); // Resaltar el primer nodo en AFD Óptimo
 
+    if (
+      dataOpt.sussefull &&
+      dataOpt.transitions.length === 1 &&
+      dataOpt.transitions[0].node1 === "A" &&
+      dataOpt.transitions[0].node2 === "" &&
+      dataOpt.transitions[0].chart === ""
+    ) {
+      resaltarPrimerNodo(afdOptGraph, nodeIdMapOpt);
       return;
     } else {
       startTraversalOpt();
     }
   });
 
-// Función para mostrar el resultado si la cadena vacía es aceptada
-function mostrarResultadoCadenaVacia() {
-  let inputField = document.getElementById("cadena");
-  recorridoDivOpt = document.getElementById("recorridoOpt");
-  recorridoDivNop = document.getElementById("recorridoNop");
-
-  // Mostrar directamente que la expresión vacía es aceptada
-  document.getElementById(
-    "resultadoNop"
-  ).innerHTML = `<p class="result-text"><span class="accepted">Regular expression accepted (empty string)</span></p>`;
-  document.getElementById(
-    "resultadoOpt"
-  ).innerHTML = `<p class="result-text"><span class="accepted">Regular expression accepted (empty string)</span></p>`;
-
-  // Cambiar el color del input a verde (valid-input)
-  inputField.classList.remove("invalid-input");
-  inputField.classList.add("valid-input");
-
-  // Asegurarse de que los contenedores estén visibles si estaban ocultos
-  document.getElementById("resultadoNop").classList.remove("hidden");
-  document.getElementById("resultadoOpt").classList.remove("hidden");
-  recorridoDivOpt.classList.add("hidden");
-  recorridoDivNop.classList.add("hidden");
-}
 
 // Función para resaltar un nodo directamente por su ID en el grafo sin afectar las aristas
 function highlightNodeById(graph, nodeId, duration) {
@@ -299,38 +274,6 @@ function resaltarPrimerNodo(graph) {
   }
 }
 
-// Función para mostrar el resultado si la cadena vacía no es aceptada
-function mostrarResultadoCadenaInvalida() {
-  let inputField = document.getElementById("cadena");
-  let startButtonNop = document.getElementById("startButtonNop");
-  let startButtonOpt = document.getElementById("startButtonOpt");
-  recorridoDivOpt = document.getElementById("recorridoOpt");
-  recorridoDivNop = document.getElementById("recorridoNop");
-
-  // Mostrar directamente que la expresión vacía es rechazada
-  document.getElementById(
-    "resultadoNop"
-  ).innerHTML = `<p class="result-text"><span class="rejected">Regular expression rejected (empty string)</span></p>`;
-  document.getElementById(
-    "resultadoOpt"
-  ).innerHTML = `<p class="result-text"><span class="rejected">Regular expression rejected (empty string)</span></p>`;
-
-  // Cambiar el color del input a rojo (invalid-input)
-  inputField.classList.remove("valid-input");
-  inputField.classList.add("invalid-input");
-
-  // Asegurarse de que los contenedores estén visibles si estaban ocultos
-  document.getElementById("resultadoNop").classList.remove("hidden");
-  document.getElementById("resultadoOpt").classList.remove("hidden");
-
-  // Deshabilitar los botones de Start si la cadena es rechazada
-  startButtonNop.disabled = true;
-  startButtonOpt.disabled = true;
-  startButtonNop.classList.add("disabled-button");
-  startButtonOpt.classList.add("disabled-button");
-  recorridoDivOpt.classList.add("hidden");
-  recorridoDivNop.classList.add("hidden");
-}
 
 // Función para mostrar el recorrido en el DOM y cambiar el color del input
 function mostrarRecorrido(data, afdType) {
@@ -360,9 +303,42 @@ function mostrarRecorrido(data, afdType) {
   resultadoDiv.classList.remove("hidden");
 
   const transitions = data.transitions;
+
+  // Manejar el caso de cadena vacía
+  if (
+    transitions.length === 1 &&
+    transitions[0].node1 === "A" &&
+    transitions[0].node2 === "" &&
+    transitions[0].chart === ""
+  ) {
+    // Mostrar solo el primer nodo
+    let recorridoText = `<div class="transition-container">
+                            <span class="node">${transitions[0].node1}</span> 
+                         </div>`;
+    
+    recorridoDiv.innerHTML = `<div class="recorrido-container">${recorridoText}</div>`;
+
+    // Mostrar el resultado de aceptación
+    resultadoDiv.innerHTML = `<p class="result-text">
+            <span class="accepted">Regular expression accepted (empty string)</span></p>`;
+    
+    // Cambiar el color del input según si la expresión regular fue aceptada o rechazada
+    inputField.classList.remove("invalid-input");
+    inputField.classList.add("valid-input");
+
+    // Habilitar los botones de Start
+    startButtonNop.disabled = false;
+    startButtonOpt.disabled = false;
+    startButtonNop.classList.remove("disabled-button");
+    startButtonOpt.classList.remove("disabled-button");
+
+    // Salir de la función ya que no hay más transiciones
+    return;
+  }
+
+  // Crear la representación del recorrido normal si no es una cadena vacía
   let recorridoText = "";
 
-  // Crear la representación del recorrido
   transitions.forEach((transition) => {
     recorridoText += `<div class="transition-container">
                           <span class="node">${transition.node1}</span> 
@@ -408,6 +384,7 @@ function mostrarRecorrido(data, afdType) {
     startButtonOpt.classList.add("disabled-button");
   }
 }
+
 
 // Detectar cuando se borra la cadena y resetear el estilo
 document.getElementById("cadena").addEventListener("input", function () {
@@ -620,8 +597,11 @@ function TableThompson(data) {
                     (state) => ` 
                     <tr>
                         <td>${
-                          state === initialState ? "→" + state : 
-                          state === finalState ? "*" + state : state
+                          state === initialState
+                            ? "→" + state
+                            : state === finalState
+                            ? "*" + state
+                            : state
                         }</td>
                         ${Object.keys(transitionTable)
                           .map(
@@ -644,7 +624,6 @@ function TableThompson(data) {
 
   tablesDiv.innerHTML = transitionTableHTML;
 }
-
 
 function TableAFDNop(data) {
   const afdNop = data.AFDnop; // Datos del AFD no óptimo
@@ -917,8 +896,8 @@ function graficarAFDOpt(data) {
         gravitationalConstant: -3900,
         centralGravity: 0,
       },
-      minVelocity: 1
-    }
+      minVelocity: 1,
+    },
   };
 
   console.log("Nodos en AFD Óptimo:", nodes.get());
@@ -926,7 +905,6 @@ function graficarAFDOpt(data) {
 
   afdOptGraph = new vis.Network(container, networkData, options);
 }
-
 
 function graficarAFDNop(data) {
   const nodes = new vis.DataSet();
