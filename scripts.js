@@ -340,8 +340,6 @@ function mostrarRecorrido(data, afdType) {
 
   let startButtonNop = document.getElementById("startButtonNop");
   let startButtonOpt = document.getElementById("startButtonOpt");
-  let repeatButtonNop = document.getElementById("repeatButtonNop");
-  let repeatButtonOpt = document.getElementById("repeatButtonOpt");
 
   // Asignar los elementos de acuerdo al tipo de AFD
   if (afdType === "AFD No Óptimo") {
@@ -408,8 +406,6 @@ function mostrarRecorrido(data, afdType) {
     startButtonOpt.disabled = true;
     startButtonNop.classList.add("disabled-button");
     startButtonOpt.classList.add("disabled-button");
-    repeatButtonNop.style.display = "none";
-    repeatButtonOpt.style.display = "none";
   }
 }
 
