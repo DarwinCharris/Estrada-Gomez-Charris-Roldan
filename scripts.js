@@ -4,6 +4,7 @@ let data = {};
 let regexInput = "";
 let afdNopGraph, afdOptGraph; // Variables globales para los grafos
 
+
 document.getElementById("submitBtn").addEventListener("click", function () {
   // Guardamos el valor de la expresión regular ingresada
   regexInput = document.getElementById("regexInput").value;
@@ -51,28 +52,24 @@ document.getElementById("submitBtn").addEventListener("click", function () {
   }
 });
 
-// Llamada a las APIs para el AFD No Óptimo y AFD Óptimo
+// TESTING CADENA 
+
 document.getElementById("submitButton").addEventListener("click", function () {
   const inputCadena = document.getElementById("cadena").value;
-
-  const dataNop = test(data.AFDnop, inputCadena);
-  if (
-    dataNop.sussefull &&
-    dataNop.transitions.length === 1 &&
-    dataNop.transitions[0].node1 === "A" &&
-    dataNop.transitions[0].node2 === "" &&
-    dataNop.transitions[0].chart === ""
-  ) {
-  }
   // Procesar los datos del AFD No Óptimo
+  const dataNop = test(data.AFDnop, inputCadena);
   currentTransitionsNop = dataNop.transitions;
   construirMapeo(afdNopGraph, nodeIdMapNop);
   mostrarRecorrido(dataNop, "AFD No Óptimo");
+
+  // Procesar los datos del AFD Óptimo
   const dataOpt = test(data.AFDop, inputCadena);
   currentTransitionsOpt = dataOpt.transitions;
   construirMapeo(afdOptGraph, nodeIdMapOpt);
   mostrarRecorrido(dataOpt, "AFD Óptimo");
 });
+
+
 
 // Crear un objeto de mapeo dinámico para cada grafo
 let nodeIdMapNop = {};
@@ -205,6 +202,8 @@ function startTraversalOpt() {
 document
   .getElementById("startButtonNop")
   .addEventListener("click", function () {
+    const inputCadena = document.getElementById("cadena").value; 
+    const dataNop = test(data.AFDnop, inputCadena);
     if (
       dataNop.sussefull &&
       dataNop.transitions.length === 1 &&
@@ -212,6 +211,7 @@ document
       dataNop.transitions[0].node2 === "" &&
       dataNop.transitions[0].chart === ""
     ) {
+      console.log("hola aqui reslto mi primer nodo")
       resaltarPrimerNodo(afdNopGraph, nodeIdMapNop);
       return;
     } else {
@@ -223,8 +223,8 @@ document
 document
   .getElementById("startButtonOpt")
   .addEventListener("click", function () {
-
-
+    const inputCadena = document.getElementById("cadena").value; 
+    const dataOpt = test(data.AFDop, inputCadena);
     if (
       dataOpt.sussefull &&
       dataOpt.transitions.length === 1 &&
@@ -879,7 +879,7 @@ function graficarAFDOpt(data) {
       from: "invisible",
       to: initialNode,
       label: "start",
-      color: { color: "blue" },
+      color: { color: "#5DADE2" },
       arrows: { to: { enabled: true } },
     });
   }
@@ -889,7 +889,7 @@ function graficarAFDOpt(data) {
   const networkData = { nodes: nodes, edges: edges };
 
   const options = {
-    nodes: { shape: "circle", size: 20, font: { size: 30 } },
+    nodes: { shape: "circle", size: 20, color: { background: "#89CFF0", border: "#5DADE2" }, font: { size: 30 } },
     edges: { arrows: { to: { enabled: true } }, length: 200 },
     physics: {
       barnesHut: {
