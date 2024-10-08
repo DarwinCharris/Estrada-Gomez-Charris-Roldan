@@ -1,1 +1,1 @@
-# Lab_Atomata
+# Lab-2-de-Compiladores

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RegexVisualizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <div id="regexInputContainer">
+        <h2>RegexVisualizer</h2>
+        <input type="text" id="regexInput" placeholder="Enter regular expression...">
+        <button id="submitBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                <path fill-rule="evenodd"
+                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
+                    clip-rule="evenodd" />
+            </svg>
+
+        </button>
+    </div>
+
+    <div class="container-cadena hidden">
+        <input type="text" id="cadena" placeholder="Enter a string to test with the automaton or an empty string also...">
+        <button id="submitButton">Validate</button>
+        <button id="resetButton">Reset</button> 
+    </div>      
+
+
+    <div class="container-graph-table hidden">
+        <div class="graph-container">
+            <h3>Non-deterministic Finite Automaton (NFA)</h3>
+            <div id="network-thompson">
+            </div>
+        </div>
+        <div class="table-container">
+            <div class="simbolos"></div>
+            <div id="thompson-table"></div>
+        </div>
+    </div>
+
+
+
+    <div class="container-graph-table hidden">
+        <div class="graph-container">
+            <h3>Non-optimal Deterministic Finite Automaton</h3>
+            <div id="network-afdnop"></div>
+            <p class="text-next-button">Enter a string to see the graph traversal with 'Start' button</p>
+            <button id="startButtonNop" class="start-traversal">Start </button>
+            <div id="recorridoNop"></div>
+            <div id="resultadoNop"></div>
+        </div>
+        <div class="table-container">
+            <div class="simbolos"></div>
+            <div id="afdnop-table"></div>
+        </div>
+    </div>
+
+
+    <div class="container-graph-table hidden">
+        <div class="graph-container">
+            <h3>Optimal Deterministic Finite Automaton</h3>
+            <div id="network-afdopt"></div>
+            <p class="text-next-button">Enter a string to see the graph traversal with 'Start' button</p>
+            <button id="startButtonOpt" class="start-traversal">Start </button>
+            <div id="recorridoOpt"></div>
+            <div id="resultadoOpt"></div>
+        </div>
+        <div class="table-container">
+            <div class="simbolos"></div>
+            <div id="afdopt-table"></div>
+            <div id="identical-states"></div>
+        </div>
+    </div>
+
+    <script src="scripts.js" type="module"></script> <!-- Vincular a tu archivo JavaScript -->
+</body>
+
+</html>
