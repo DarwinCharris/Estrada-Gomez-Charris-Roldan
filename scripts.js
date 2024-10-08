@@ -303,9 +303,11 @@ function mostrarRecorrido(data, afdType) {
   resultadoDiv.classList.remove("hidden");
 
   const transitions = data.transitions;
+  const sussefull = data.sussefull;
 
   // Manejar el caso de cadena vacía
   if (
+    sussefull &&
     transitions.length === 1 &&
     transitions[0].node1 === "A" &&
     transitions[0].node2 === "" &&
@@ -336,6 +338,7 @@ function mostrarRecorrido(data, afdType) {
     return;
   }
 
+  
   // Crear la representación del recorrido normal si no es una cadena vacía
   let recorridoText = "";
 
