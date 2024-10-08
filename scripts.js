@@ -3,7 +3,8 @@ import { generateAutomatonJSON, test } from "./backend.js";
 let data = {};
 let regexInput = "";
 let afdNopGraph, afdOptGraph; // Variables globales para los grafos
-
+let dataNop ={};
+let dataOpt ={};
 document.getElementById("submitBtn").addEventListener("click", function () {
   // Guardamos el valor de la expresión regular ingresada
   regexInput = document.getElementById("regexInput").value;
@@ -55,7 +56,7 @@ document.getElementById("submitBtn").addEventListener("click", function () {
 document.getElementById("submitButton").addEventListener("click", function () {
   const inputCadena = document.getElementById("cadena").value;
 
-  const dataNop = test(data.AFDnop, inputCadena);
+   dataNop = test(data.AFDnop, inputCadena);
   if (
     dataNop.sussefull &&
     dataNop.transitions.length === 1 &&
@@ -68,7 +69,7 @@ document.getElementById("submitButton").addEventListener("click", function () {
   currentTransitionsNop = dataNop.transitions;
   construirMapeo(afdNopGraph, nodeIdMapNop);
   mostrarRecorrido(dataNop, "AFD No Óptimo");
-  const dataOpt = test(data.AFDop, inputCadena);
+   dataOpt = test(data.AFDop, inputCadena);
   currentTransitionsOpt = dataOpt.transitions;
   construirMapeo(afdOptGraph, nodeIdMapOpt);
   mostrarRecorrido(dataOpt, "AFD Óptimo");
