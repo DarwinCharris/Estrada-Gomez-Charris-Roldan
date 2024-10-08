@@ -683,6 +683,7 @@ function SigStates(G) {
 function AFD(T, G, df) {
     const states = SigStates(G);
     const N = []; // Lista para almacenar los registros de estados simétricos
+    const aux = []; // Lista para guardar las parejas de [stateToKeep, stateToRemove]
 
     // Filtrar los estados en T
     for (let i = 0; i < T.length; i++) {
@@ -691,48 +692,49 @@ function AFD(T, G, df) {
     }
     
     const Tres = [...T]; // Crear una copia de T
-    const dic = {};
     
     // Comparar estados en T
-    for (const [lett, numbs] of T) {
-        for (const [other_lett, other_numbs] of T) {
+    for (let i = 0; i < T.length; i++) {
+        const [lett, numbs] = T[i];
+        
+        for (let j = i + 1; j < T.length; j++) { // Comienza a partir de i + 1 para evitar comparaciones duplicadas
+            const [other_lett, other_numbs] = T[j];
+
+            // Verificar si los estados son diferentes pero las listas de números son iguales
             if (lett !== other_lett && JSON.stringify(numbs) === JSON.stringify(other_numbs)) {
-                // Determinar cuál es el estado lexicográficamente menor
+                // Determinar el estado lexicográficamente menor
                 const stateToKeep = lett < other_lett ? lett : other_lett;
                 const stateToRemove = lett < other_lett ? other_lett : lett;
-                
-                if (!dic[stateToKeep]) {
-                    dic[stateToKeep] = [];
-                }
-                dic[stateToKeep].push(stateToRemove);
-                
-                // Agregar a la lista N el mensaje de simetría antes de eliminar
+
+                // Agregar el mensaje de simetría a N
                 N.push(`${stateToKeep} is identical to ${stateToRemove}`);
-                
-                // Eliminar el estado duplicado
-                T.splice(T.indexOf([other_lett, other_numbs]), 1);
+
+                // Guardar la pareja en aux
+                aux.push([stateToKeep, stateToRemove]);
+
+                // Eliminar la fila correspondiente en df donde df[0] es igual a stateToRemove
                 df = df.filter(row => row[0] !== stateToRemove);
             }
         }
     }
-    
+
     // Reemplazar los estados eliminados en el dataframe
-    for (const [key, values] of Object.entries(dic)) {
+    for (const [stateToKeep, stateToRemove] of aux) {
+        // Recorrer cada fila de df y cada columna, excepto 'states', para hacer el reemplazo
         for (const col of Object.keys(df[0])) {
             if (col !== 'states') {
-                for (const value of values) {
-                    df.forEach(row => {
-                        if (row[col] === value) {
-                            row[col] = key;
-                        }
-                    });
-                }
+                df.forEach(row => {
+                    if (row[col] === stateToRemove) {
+                        row[col] = stateToKeep;
+                    }
+                });
             }
         }
     }
-    
+
     return [df, Tres, N]; // Devolver también la lista N
 }
+
 
 function Transform(df, alphabet) {
     const result = {
@@ -780,6 +782,7 @@ function generateAutomatonJSON(regex) {
         const NewAFDnop = Transform(AFDnop, [...alphabet])
         // Generar AFDop
         const [AFDop, states, identical] = AFD([...T], graph, AFDnop);
+        console.log(AFDop)
         const newAFDop = Transform(AFDop, alphabet)
 
         // Crear la estructura del JSON

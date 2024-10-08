@@ -60,7 +60,13 @@ document.getElementById("submitButton").addEventListener("click", function () {
   const inputCadena = document.getElementById("cadena").value;
 
   const dataNop = test(data.AFDnop, inputCadena)
-  console.log(dataNop)
+  if (dataNop.sussefull && 
+    dataNop.transitions.length === 1 && 
+    dataNop.transitions[0].node1 === "A" && 
+    dataNop.transitions[0].node2 === "" && 
+    dataNop.transitions[0].chart === "") {
+      console.log('Si sirve')
+    }
   // Procesar los datos del AFD No Óptimo
   currentTransitionsNop = dataNop.transitions;
   construirMapeo(afdNopGraph, nodeIdMapNop);
