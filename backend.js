@@ -358,7 +358,7 @@ function extractInteriorAndOperator(string) {
             }
 
             // After closing the parentheses, check if the next character is '*' or '+'
-            if (i < string.length && (string[i] === '*' || string[i] === '+')) {
+            if (i < string.length && (string[i] === '*' || string[i] === '+'|| string[i] === '?')) {
                 operator = string[i];
             } else {
                 operator = '';
@@ -412,6 +412,9 @@ function thompson(regex) {
             } else if (operador === '+') {
                 // Case (...)+ - Apply Positive closure
                 graphAux.nodes = positiveClosure(graphAux);
+                i += movi + 2;
+            }else if (operador === '?'){
+                graphAux.nodes = interogate(graphAux);
                 i += movi + 2;
             } else {
                 // Case (...) - No closure operator
@@ -910,6 +913,11 @@ function test(table, regex) {
     }
 }
 
+/*
+const regex = "b*a(a+b)b((a(a+b))?b)*"; // Reemplaza con tu expresión regular
+const automatonJSON = generateAutomatonJSON(regex);
+console.log(JSON.stringify(automatonJSON.graph, null, 4));
+*/
 
 export{generateAutomatonJSON, test};
 
